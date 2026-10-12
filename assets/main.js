@@ -103,15 +103,17 @@ document.addEventListener('DOMContentLoaded', () => {
         contactForm.reportValidity();
         return;
       }
-      const submitBtn = contactForm.querySelector('button[type="submit"]');
-      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'পাঠানো হচ্ছে...'; }
-      submitToNetlify(contactForm, () => {
-        contactForm.style.display = 'none';
-        document.getElementById('contactSuccess').style.display = 'block';
-      }, () => {
-        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'বার্তা পাঠান'; }
-        openEmailDraft(contactForm, 'ইবনে খালদুন স্কুলে যোগাযোগ');
-      });
+      const formData = new FormData(contactForm);
+      const fields = [
+        ['নাম', formData.get('cName')],
+        ['মোবাইল নম্বর', formData.get('cPhone')],
+        ['ইমেইল', formData.get('cEmail')],
+        ['বিষয়', formData.get('cSubject')],
+        ['বার্তা', formData.get('cMessage')]
+      ].filter(([, value]) => value);
+      const subject = formData.get('cSubject') || 'ইবনে খালদুন স্কুলে যোগাযোগ';
+      const body = fields.map(([label, value]) => `${label}: ${value}`).join('\n');
+      window.location.href = `mailto:ibnkhaldunschoolbanshkhali@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     });
   }
 
@@ -486,4 +488,3 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 });
-

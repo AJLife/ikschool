@@ -64,9 +64,7 @@ aw          <li><a href="pages/admission.html" class="nav-cta">ভর্তি �
       <div class="reveal">
         <div class="form-card" style="background:var(--white);">
           <h3 style="margin-bottom:20px;">বার্তা পাঠান</h3>
-          <form id="contactForm" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" novalidate>
-            <input type="hidden" name="form-name" value="contact">
-            <p class="hidden" style="display:none;"><label>Don't fill this out if you're human: <input name="bot-field"></label></p>
+          <form id="contactForm" novalidate>
             <div class="form-row">
               <div class="field">
                 <label for="cName">আপনার নাম <span class="req">*</span></label>
@@ -95,13 +93,9 @@ aw          <li><a href="pages/admission.html" class="nav-cta">ভর্তি �
               <label for="cMessage">আপনার বার্তা <span class="req">*</span></label>
               <textarea id="cMessage" name="cMessage" required></textarea>
             </div>
-            <button type="submit" class="btn btn-primary" style="border:none;">বার্তা পাঠান</button>
+            <button type="submit" class="btn btn-primary" style="border:none;">ইমেইলে পাঠান</button>
           </form>
-          <div class="form-success" id="contactSuccess">
-            <div class="check">✓</div>
-            <h3>বার্তা পাঠানো হয়েছে</h3>
-            <p>আমরা যত দ্রুত সম্ভব আপনার সাথে যোগাযোগ করব। ধন্যবাদ।</p>
-          </div>
+          <p class="field-hint" style="margin-top:12px;" aria-live="polite">সাবমিট করলে আপনার ইমেইল অ্যাপে বার্তার খসড়া খুলবে। পাঠাতে ইমেইল অ্যাপ থেকে Send চাপুন।</p>
         </div>
       </div>
 
