@@ -608,6 +608,20 @@ section {
   gap: 24px;
 }
 
+.admission-layout {
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  gap: clamp(24px, 4vw, 40px);
+  align-items: start;
+}
+
+.admission-layout > * {
+  min-width: 0;
+}
+
+.admission-layout .form-card {
+  min-width: 0;
+}
+
 @media (max-width:940px) {
   .grid-4 {
     grid-template-columns: repeat(2, 1fr);
@@ -615,6 +629,10 @@ section {
 
   .grid-3 {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admission-layout {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -624,6 +642,10 @@ section {
   .grid-3,
   .grid-2 {
     grid-template-columns: 1fr;
+  }
+
+  .admission-layout .form-card {
+    padding: 22px 18px;
   }
 }
 
