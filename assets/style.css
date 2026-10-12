@@ -2767,6 +2767,124 @@ button.nav-cta {
   margin-top: 6px;
 }
 
+/* ---------- Submission confirmation modal ---------- */
+.submission-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(8, 24, 42, 0.68);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .22s ease, visibility .22s ease;
+}
+
+.submission-modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.submission-modal {
+  width: min(100%, 440px);
+  padding: 36px 30px 30px;
+  border: 1px solid rgba(201, 162, 75, 0.35);
+  border-radius: 18px;
+  background: var(--white);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  transform: translateY(14px) scale(.98);
+  transition: transform .22s ease;
+}
+
+.submission-modal-overlay.open .submission-modal {
+  transform: translateY(0) scale(1);
+}
+
+.submission-modal-icon {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  margin: 0 auto 18px;
+  border: 1px solid rgba(62, 107, 79, 0.18);
+  border-radius: 50%;
+  background: rgba(62, 107, 79, 0.1);
+  color: var(--green);
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.submission-modal.is-error .submission-modal-icon {
+  border-color: rgba(178, 59, 59, 0.2);
+  background: rgba(178, 59, 59, 0.1);
+  color: #B23B3B;
+}
+
+.submission-modal h2 {
+  margin-bottom: 10px;
+  color: var(--navy-dark);
+  font-size: 1.45rem;
+}
+
+.submission-modal p {
+  color: #5A5F6B;
+  line-height: 1.7;
+}
+
+.submission-modal-email,
+.submission-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin-top: 22px;
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--navy);
+  color: var(--white);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .2s ease, transform .2s ease;
+}
+
+.submission-modal-email:hover,
+.submission-modal-close:hover {
+  background: var(--navy-mid);
+  transform: translateY(-1px);
+}
+
+.submission-modal-email[hidden] {
+  display: none;
+}
+
+.submission-modal-email + .submission-modal-close {
+  margin-left: 8px;
+}
+
+@media (max-width:480px) {
+  .submission-modal {
+    padding: 30px 22px 24px;
+  }
+
+  .submission-modal-email,
+  .submission-modal-close {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .submission-modal-email + .submission-modal-close {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+}
+
 /* ---------- Dashboards (student & admin) ---------- */
 .dash-shell {
   background: var(--paper);

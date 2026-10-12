@@ -64,12 +64,63 @@ document.addEventListener('DOMContentLoaded', () => {
       .catch(() => onError());
   }
 
-  function openEmailDraft(form, subject) {
+  function getEmailDraftUrl(form, subject) {
     const fields = Array.from(new FormData(form))
       .filter(([name, value]) => name !== 'form-name' && name !== 'bot-field' && value)
       .map(([name, value]) => `${name}: ${value}`)
       .join('\n');
-    window.location.href = `mailto:ibnkhaldunschoolbanshkhali@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(fields)}`;
+    return `mailto:ibnkhaldunschoolbanshkhali@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(fields)}`;
+  }
+
+  function showSubmissionModal(title, message, options = {}) {
+    let overlay = document.getElementById('submissionModal');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'submissionModal';
+      overlay.className = 'submission-modal-overlay';
+      overlay.innerHTML = `
+        <section class="submission-modal" role="dialog" aria-modal="true"
+          aria-labelledby="submissionModalTitle" aria-describedby="submissionModalMessage" tabindex="-1">
+          <div class="submission-modal-icon" aria-hidden="true"></div>
+          <h2 id="submissionModalTitle"></h2>
+          <p id="submissionModalMessage"></p>
+          <a class="submission-modal-email" hidden></a>
+          <button class="submission-modal-close" type="button">ঠিক আছে</button>
+        </section>`;
+      document.body.appendChild(overlay);
+
+      const closeModal = () => {
+        overlay.classList.remove('open');
+        if (overlay.returnFocus && typeof overlay.returnFocus.focus === 'function') {
+          overlay.returnFocus.focus();
+        }
+      };
+      overlay.querySelector('.submission-modal-close').addEventListener('click', closeModal);
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) closeModal();
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+      });
+    }
+
+    const dialog = overlay.querySelector('.submission-modal');
+    const icon = overlay.querySelector('.submission-modal-icon');
+    const emailLink = overlay.querySelector('.submission-modal-email');
+    overlay.returnFocus = document.activeElement;
+    dialog.classList.toggle('is-error', Boolean(options.error));
+    icon.textContent = options.error ? '!' : '✓';
+    overlay.querySelector('#submissionModalTitle').textContent = title;
+    overlay.querySelector('#submissionModalMessage').textContent = message;
+    emailLink.hidden = !options.emailUrl;
+    if (options.emailUrl) {
+      emailLink.href = options.emailUrl;
+      emailLink.textContent = 'ইমেইলে পাঠানোর খসড়া খুলুন';
+    } else {
+      emailLink.removeAttribute('href');
+    }
+    overlay.classList.add('open');
+    dialog.focus();
   }
 
   // ---------- Admission form ----------
@@ -87,9 +138,17 @@ document.addEventListener('DOMContentLoaded', () => {
         admissionForm.style.display = 'none';
         document.getElementById('admissionSuccess').style.display = 'block';
         window.scrollTo({ top: document.querySelector('.form-card').offsetTop - 100, behavior: 'smooth' });
+        showSubmissionModal(
+          'ভর্তি রেজিস্ট্রেশন জমা হয়েছে',
+          'আপনার আবেদন সফলভাবে জমা হয়েছে। কিছুক্ষণের মধ্যে আমাদের প্রতিনিধি আপনার সাথে যোগাযোগ করবেন, ইনশাআল্লাহ।'
+        );
       }, () => {
         if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'রেজিস্ট্রেশন জমা দিন'; }
-        openEmailDraft(admissionForm, 'ভর্তি রেজিস্ট্রেশন আবেদন');
+        showSubmissionModal(
+          'আবেদন জমা হয়নি',
+          'দুঃখিত, এই মুহূর্তে আবেদনটি জমা করা যায়নি। আবার চেষ্টা করুন অথবা ইমেইলে পাঠানোর খসড়া খুলুন।',
+          { error: true, emailUrl: getEmailDraftUrl(admissionForm, 'ভর্তি রেজিস্ট্রেশন আবেদন') }
+        );
       });
     });
   }
@@ -104,16 +163,24 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       const formData = new FormData(contactForm);
-      const fields = [
-        ['নাম', formData.get('cName')],
-        ['মোবাইল নম্বর', formData.get('cPhone')],
-        ['ইমেইল', formData.get('cEmail')],
-        ['বিষয়', formData.get('cSubject')],
-        ['বার্তা', formData.get('cMessage')]
-      ].filter(([, value]) => value);
       const subject = formData.get('cSubject') || 'ইবনে খালদুন স্কুলে যোগাযোগ';
-      const body = fields.map(([label, value]) => `${label}: ${value}`).join('\n');
-      window.location.href = `mailto:ibnkhaldunschoolbanshkhali@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      const submitBtn = contactForm.querySelector('button[type="submit"]');
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'পাঠানো হচ্ছে...'; }
+      submitToNetlify(contactForm, () => {
+        contactForm.style.display = 'none';
+        document.getElementById('contactSuccess').style.display = 'block';
+        showSubmissionModal(
+          'আপনার বার্তা জমা হয়েছে',
+          'আপনার বার্তাটি সফলভাবে জমা হয়েছে। কিছুক্ষণের মধ্যে আমাদের প্রতিনিধি আপনার সাথে যোগাযোগ করবেন, ইনশাআল্লাহ।'
+        );
+      }, () => {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'বার্তা পাঠান'; }
+        showSubmissionModal(
+          'বার্তা জমা হয়নি',
+          'দুঃখিত, এই মুহূর্তে বার্তাটি জমা করা যায়নি। আবার চেষ্টা করুন অথবা ইমেইলে পাঠানোর খসড়া খুলুন।',
+          { error: true, emailUrl: getEmailDraftUrl(contactForm, subject) }
+        );
+      });
     });
   }
 
